@@ -1,5 +1,6 @@
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { ObjectTracker, decodeYolo, letterbox, faceResults } from './core.js';
+import { unpackWasm } from './wasm.js';
 
 let landmarker, session, ort, tracker;
 let backend = 'CPU', lastTimestamp = -1;
@@ -27,8 +28,7 @@ async function initialize({ baseUrl, forceCpu = false }) {
   ort.env.wasm.wasmPaths = new URL('vendor/onnx/', baseUrl).href;
   const binaryUrl = new URL(`vendor/onnx/ort-wasm-simd-threaded${wantGpu ? '.asyncify' : ''}.wasm.gz`, baseUrl);
   const compressed = await checkedFetch(binaryUrl);
-  const decompressed = new Blob([compressed]).stream().pipeThrough(new DecompressionStream('gzip'));
-  ort.env.wasm.wasmBinary = await new Response(decompressed).arrayBuffer();
+  ort.env.wasm.wasmBinary = await unpackWasm(compressed);
   // Avoid cross-origin isolation requirements; inference already runs off the UI thread.
   ort.env.wasm.numThreads = 1;
   const model = await checkedFetch(new URL('models/yolo11n.onnx', baseUrl));

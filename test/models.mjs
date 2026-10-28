@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { gunzipSync } from 'node:zlib';
 import * as ort from '../public/vendor/onnx/ort.wasm.bundle.min.mjs';
 import { decodeYolo, letterbox } from '../src/core.js';
+import { unpackWasm } from '../src/wasm.js';
 
 ort.env.wasm.numThreads = 1;
-ort.env.wasm.wasmBinary = gunzipSync(await readFile(new URL('../public/vendor/onnx/ort-wasm-simd-threaded.wasm.gz', import.meta.url)));
+ort.env.wasm.wasmBinary = await unpackWasm(await readFile(new URL('../public/vendor/onnx/ort-wasm-simd-threaded.wasm.gz', import.meta.url)));
 const session = await ort.InferenceSession.create(new Uint8Array(await readFile(new URL('../public/models/yolo11n.onnx', import.meta.url))), { executionProviders: ['wasm'] });
 const tensor = new ort.Tensor('float32', new Float32Array(3 * 320 ** 2), [1, 3, 320, 320]);
 try {

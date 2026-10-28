@@ -54,8 +54,8 @@ Deploy **`dist/`** to any HTTPS static host. Model files are committed in
 `public/models/`. `npm ci` copies the pinned runtime assets from `node_modules/`
 into `public/vendor/`; no CDN is used at runtime. ONNX WebAssembly binaries are
 stored as `.wasm.gz` and decompressed locally to keep individual assets below
-common static-host file limits. Serve those `.gz` files as ordinary files;
-do not add a `Content-Encoding: gzip` response header.
+common static-host file limits. The loader accepts both ordinary gzip files
+and hosts that transparently decompress them through `Content-Encoding: gzip`.
 
 The default relative base supports both a root URL and a `/smilecam/` subpath.
 For a specific base path, set `BASE_PATH` when building.
