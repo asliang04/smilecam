@@ -1,0 +1,10 @@
+# Ultralytics ByteTrack settings. Same as the bundled bytetrack.yaml except track_buffer:
+# lost tracks are kept for 60 tracker updates (about 2.5 s here) instead of 30, so a person
+# who is briefly hidden keeps their ID instead of being counted a second time.
+tracker_type: bytetrack
+track_high_thresh: 0.25
+track_low_thresh: 0.1
+new_track_thresh: 0.25
+track_buffer: 60
+match_thresh: 0.8
+fuse_score: True

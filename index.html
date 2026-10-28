@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#202020" />
+    <title>smilecam</title>
+  </head>
+  <body>
+    <main class="app">
+      <section id="stage" class="stage" aria-label="Camera">
+        <video id="video" autoplay playsinline muted hidden></video>
+        <canvas id="output" aria-label="Camera with object and face detection" hidden></canvas>
+        <div id="welcome" class="center"><button id="start">Start camera</button></div>
+        <div id="loading" class="center" hidden><p id="loading-message" role="status">Loading models…</p><button id="cancel">Cancel</button></div>
+        <div id="paused-overlay" class="paused-overlay" hidden><span aria-hidden="true">Ⅱ</span><button id="resume">Resume [space]</button></div>
+      </section>
+      <aside class="panel" aria-label="Counts and controls">
+        <h1>smilecam</h1>
+        <table><thead><tr><th scope="col"></th><th scope="col">now</th><th scope="col">seen</th></tr></thead><tbody id="counts"></tbody></table>
+        <dl><div><dt>faces</dt><dd id="faces">0</dd></div><div><dt>smiles captured</dt><dd id="captures">0</dd></div></dl>
+        <div class="settings">
+          <label for="camera">Camera</label><select id="camera"><option value="">Default camera</option></select>
+          <div class="threshold-label"><label for="threshold">Smile threshold</label><output id="threshold-value" for="threshold">0.70</output></div>
+          <input id="threshold" type="range" min="0.35" max="0.95" value="0.70" step="0.05" />
+          <label class="checkbox"><input id="mirror" type="checkbox" checked />Mirror</label>
+          <label class="checkbox"><input id="cpu" type="checkbox" />CPU only</label>
+        </div>
+        <div id="error" class="error" role="alert" hidden></div>
+        <div class="controls"><button id="pause" disabled>Pause [space]</button><button id="stop" disabled>Stop [Esc]</button><p id="performance" role="status">camera off</p></div>
+      </aside>
+    </main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
