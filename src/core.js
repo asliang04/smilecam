@@ -133,7 +133,7 @@ export function assignment(costs) {
 }
 
 // Browser tracker: two confidence passes with global IoU assignment and motion prediction.
-// Preserves short-lived IDs, but is deliberately not advertised as Python ByteTrack parity.
+// Preserves track IDs through brief occlusion.
 export class ObjectTracker {
   constructor({ maxAge = 2.5, countAfter = 0.5 } = {}) {
     this.maxAge = maxAge;

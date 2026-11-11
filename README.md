@@ -4,7 +4,7 @@ Live webcam with boxes around people, backpacks, handbags, suitcases, and faces.
 A head-on smile held for 0.25 seconds captures a photo. The live feed slides into
 the corner for three seconds, then returns to full screen. Photos are discarded.
 
-## Web app
+## Run locally
 
 All camera processing runs locally in the browser. The host serves static code,
 models, and inference runtimes. Camera frames and photos are never uploaded,
@@ -15,7 +15,9 @@ temporary image buffers. Closing the page also releases it.
 Use a current Chrome or Edge on Windows. WebGPU is attempted automatically; if
 unavailable, processing falls back to the local CPU. **CPU only** forces the CPU
 backend before starting. Both backends run in a worker so inference does not
-block the interface. The face model uses the CPU. Python is not needed.
+block the interface. The face model uses the CPU.
+
+Requires Node.js 22.12 or later.
 
 ```sh
 npm ci
@@ -36,8 +38,8 @@ moment on the first run. Reliable offline use is not implemented.
 - Object labels show confidence and track ID. **now** counts visible detections;
   **seen** counts confirmed tracks present for at least 0.5 seconds. A track can
   survive about 2.5 seconds out of view. These are tracked visits, not unique
-  identities. The browser uses a two-stage IoU/motion tracker with global
-  assignment, not an exact port of Python ByteTrack; IDs may differ.
+  identities. A two-stage IoU/motion tracker uses global assignment to match
+  detections across frames.
 - A held smile captures once. It must be released before another capture, with
   a minimum three-second cooldown. Captures are suppressed while a photo is up.
 - Camera or mirror changes start a new session and reset counts.
@@ -82,20 +84,13 @@ page is a development test and is not included in `dist/`.
 Windows webcam operation and WebGPU performance still need testing on an actual
 Windows PC. Performance and supported GPU adapters vary by device and browser.
 
-## Desktop version
-
-The original Python application is retained in `smilecam/`, with its original
-setup and controls in [README.desktop.md](README.desktop.md). `requirements.txt`
-is for that desktop version only; the browser does not download Python or
-PyTorch.
-
 ## Models and licenses
 
-- `public/models/yolo11n.onnx`: exported from the original COCO-pretrained
+- `public/models/yolo11n.onnx`: exported from the COCO-pretrained
   Ultralytics `yolo11n.pt`, input `1×3×320×320`, ONNX opset 17, raw output
   `1×84×2100`. Model is **AGPL-3.0**; see
   [Ultralytics licensing](https://www.ultralytics.com/license).
-- `public/models/face_landmarker.task`: the original Google MediaPipe face
+- `public/models/face_landmarker.task`: the Google MediaPipe face
   landmarker, **Apache-2.0**; see
   [MediaPipe](https://github.com/google-ai-edge/mediapipe).
 - MediaPipe runtime: Apache-2.0. ONNX Runtime: MIT. Their license notices are
@@ -103,6 +98,16 @@ PyTorch.
 - Test images: [Google MediaPipe portrait](https://storage.googleapis.com/mediapipe-assets/portrait.jpg)
   and [Ultralytics bus](https://github.com/ultralytics/ultralytics/tree/main/ultralytics/assets).
 
-To regenerate the object model, install the desktop requirements and `onnx`,
-place `yolo11n.pt` in `models/`, then run `python scripts/export-model.py`.
-The exported browser model is committed, so ordinary web builds need no Python.
+### Regenerate the object model (optional)
+
+Development and production builds use the committed ONNX model. To regenerate
+it, install the Python export tools in a virtual environment:
+
+```sh
+python -m pip install 'ultralytics>=8.3' onnx
+python scripts/export-model.py
+```
+
+The script reads `models/yolo11n.pt`, downloading the official weights if
+missing, and writes `public/models/yolo11n.onnx` with the browser's expected
+input and output shapes. Commit the exported asset after regeneration.

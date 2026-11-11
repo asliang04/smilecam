@@ -1,3 +1,0 @@
-ultralytics>=8.3
-mediapipe>=0.10.14
-lap>=0.5.12  # used by the Ultralytics object tracker

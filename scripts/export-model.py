@@ -1,4 +1,4 @@
-"""Run once with the desktop requirements plus onnx installed; commit the exported asset."""
+"""Export COCO-pretrained YOLO11 weights to the browser's ONNX model asset."""
 from pathlib import Path
 import shutil
 from ultralytics import YOLO
